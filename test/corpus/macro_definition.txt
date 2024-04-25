@@ -1,0 +1,59 @@
+===
+Macro definition without body, and without arguments
+===
+.macro AwesomeMacro ; Macro block
+.endm               ; End of macro block
+---
+(source_file
+  (macro_definition
+    (control_mnemonic)
+    name: (symbol)
+    (comment)
+    (control_mnemonic))
+  (comment))
+
+===
+Macro definition without body
+===
+.macro AwesomeMacro a=1, b:req, c:vararg
+.endm
+---
+(source_file
+  (macro_definition
+    (control_mnemonic)
+    name: (symbol)
+    (macro_arguments
+      macarg: (symbol)
+      default_value: (decimal_literal)
+      macarg_req: (symbol)
+      macarg_vararg: (symbol))
+    (control_mnemonic)))
+
+===
+Macro definition with body
+===
+.macro AwesomeMacro a=1, b:req, c:vararg
+.set First, 1
+    .set Second, 2
+.endm
+---
+(source_file
+  (macro_definition
+    (control_mnemonic)
+    name: (symbol)
+    (macro_arguments
+      macarg: (symbol)
+      default_value: (decimal_literal)
+      macarg_req: (symbol)
+      macarg_vararg: (symbol))
+    body: (elements
+      (symbol_assignment
+        (directive_mnemonic)
+        (symbol)
+        value: (decimal_literal))
+      (symbol_assignment
+        (directive_mnemonic)
+        (symbol)
+        value: (decimal_literal)))
+    (control_mnemonic)))
+

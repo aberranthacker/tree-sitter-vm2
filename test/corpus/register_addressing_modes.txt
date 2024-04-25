@@ -1,0 +1,157 @@
+===
+Mode 0: Register                OPR R
+===
+MOV SP,R0
+ASL R0
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (named_register)
+      (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (register))))
+
+===
+Mode 1: Register deferred       OPR (R)
+===
+MOV (R5),R0
+ASR (R5)
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address
+        (register)))))
+
+===
+Mode 2: Auto-increment          OPR (R)+
+===
+MOV (R5)+,R0
+ASR (R5)+
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (address_postinc
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (address_postinc
+        (register)))))
+
+===
+Mode 3: Auto-increment deferred OPR @(R)+
+===
+MOV @(R5)+,R0
+ASR @(R5)+
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_postinc
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_postinc
+        (register)))))
+
+===
+Mode 4: Auto-decrement          OPR -(R)
+===
+MOV -(R5),R0
+ASR -(R5)
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (address_predec
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (address_predec
+        (register)))))
+
+===
+Mode 5: Auto-decrement deferred OPR @-(R)
+===
+MOV @-(R5),R0
+ASR @-(R5)
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_predec
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_predec
+        (register)))))
+
+===
+Mode 6: Index                   OPR X(R)
+===
+MOV -077(R5),R0
+ASR 077(R5)
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (idx_address
+        offset: (unary_expression
+          operator: (operator)
+          operand: (octal_literal))
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+    (idx_address
+      offset: (octal_literal)
+        (register)))))
+
+===
+Mode 7: Index deferred          OPR @X(R)
+===
+MOV @0b10(R5),R0
+ASR @-0b10(R5)
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_idx_address
+        offset: (binary_literal)
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_idx_address
+        offset: (unary_expression
+          operator: (operator)
+          operand: (binary_literal))
+        (register)))))

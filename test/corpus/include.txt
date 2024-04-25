@@ -1,0 +1,50 @@
+================================================================================
+Include source file
+================================================================================
+Unpack: .include "unpack.s" ; LZSA3 unpacker
+--------------------------------------------------------------------------------
+(source_file
+  (label name: (symbol))
+  (include
+    (directive_mnemonic)
+    path: (path (string_literal)))
+  (comment))
+
+================================================================================
+Include binary file
+================================================================================
+GFX: .incbin "gfx.bin" ; Graphics
+--------------------------------------------------------------------------------
+(source_file
+  (label name: (symbol))
+  (include_bin
+    (directive_mnemonic)
+    path: (path (string_literal)))
+  (comment))
+
+================================================================================
+Include binary file by offset
+================================================================================
+GFX: .incbin "gfx.bin",512 ; Graphics, skip first 512 bytes
+--------------------------------------------------------------------------------
+(source_file
+  (label name: (symbol))
+  (include_bin
+    (directive_mnemonic)
+    path: (path (string_literal))
+    offset: (decimal_literal))
+  (comment))
+
+================================================================================
+Include binary file with offset, and length specified
+================================================================================
+GFX: .incbin "gfx.bin",512,256 ; Include 256 bytes, skipping 512 bytes
+--------------------------------------------------------------------------------
+(source_file
+  (label name: (symbol))
+  (include_bin
+    (directive_mnemonic)
+    path: (path (string_literal))
+    offset: (decimal_literal)
+    length: (decimal_literal))
+  (comment))

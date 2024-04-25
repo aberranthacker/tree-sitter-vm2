@@ -1,0 +1,14 @@
+================================================================================
+Invoke macro with list of registers as operands
+================================================================================
+IntHandler: PUSH R0,R1, @#PBPADR ; MOV R0,-(SP); MOV R1,-(SP); MOV R2,-(SP)
+--------------------------------------------------------------------------------
+(source_file
+  (label name: (symbol))
+  (macro_call
+    name: (symbol)
+    operands: (arguments_list
+      (register)
+      (register)
+      (absolute_value value: (symbol))))
+  (comment))

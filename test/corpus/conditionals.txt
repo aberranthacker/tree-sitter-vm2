@@ -1,0 +1,246 @@
+================================================================================
+.ifdef SomeSymbol
+================================================================================
+.ifdef SomeSymbol
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (symbol)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifndef SomeSymbol
+================================================================================
+.ifndef SomeSymbol
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (symbol)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifnotdef SomeSymbol
+================================================================================
+.ifnotdef SomeSymbol
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (symbol)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifb "text"
+================================================================================
+.ifb "text"
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (string_literal)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifnb "text"
+================================================================================
+.ifnb "text"
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (string_literal)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+
+================================================================================
+.ifc string1, string2
+:skip
+================================================================================
+.ifc string1, string2
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    left: (string_literal)
+    right: (string_literal)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifnc string1, string2
+:skip
+================================================================================
+.ifnc string1, string2
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    left: (string_literal)
+    right: (string_literal)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifeq A && B
+================================================================================
+.ifeq A && B
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (symbol))
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifne A && B
+================================================================================
+.ifne A && B
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (symbol))
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifgt A && B
+================================================================================
+.ifgt A && B
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (symbol))
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.iflt A && B
+================================================================================
+.iflt A && B
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (symbol))
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifne A && B
+================================================================================
+.ifne A && B
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    test: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (symbol))
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifeqs "string1", "string2"
+================================================================================
+.ifeqs "string1", "string2"
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    left: (string_literal)
+    right: (string_literal)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+
+================================================================================
+.ifneqs "string1", "string2"
+================================================================================
+.ifneqs "string1", "string2"
+    NOP
+.endif
+--------------------------------------------------------------------------------
+(source_file
+  (conditional
+    mnemonic: (control_mnemonic)
+    left: (string_literal)
+    right: (string_literal)
+    consequent: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)))
+    (control_mnemonic)))
+

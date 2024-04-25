@@ -1,73 +1,63 @@
-(symbol) @variable
+(symbol) @type
+(location_counter) @type
+(label name: (symbol) @type)
+(local_label) @type
 
-(label name: (symbol) @constant)
-
-[
-  (instruction_mnemonic)
-  (directive_mnemonic)
-] @function.builtin
+(instruction_mnemonic) @keyword
 
 (include (directive_mnemonic) @include)
 (include_bin (directive_mnemonic) @include)
-(include_dir (directive_mnemonic) @include)
+(directive_mnemonic) @preproc
 
+(title heading: (string_literal) @text.title)
+; (size) @attribute
 
-(size) @attribute
-
+(control_mnemonic) @constructor
+; (conditional (control_mnemonic) @conditional)
 (macro_definition name: (symbol) @function.macro)
-(macro_call name: (symbol) @function.macro)
+(macro_call name: (symbol) @text.reference)
+(macro_arg) @variable.builtin
+; (interpolated (macro_arg) @embedded)
+
+(repeat (control_mnemonic) @repeat)
 
 [
   (path)
   (string_literal)
 ] @string
+(string_escape_code) @character.special
 
 [
   (decimal_literal)
   (hexadecimal_literal)
   (octal_literal)
-  (binary_literal)
 ] @number
 
-[
-  (reptn)
-  (carg)
-  (narg) 
-  (macro_arg)
-] @variable.builtin
+(float_decimal_literal) @float
+(binary_literal) @boolean
 
 [
-  (control_mnemonic)
-  (address_register)
-  (data_register)
-  (float_register)
+  (register)
   (named_register)
 ] @keyword
-
-(repeat (control_mnemonic) @repeat)
-(conditional (control_mnemonic) @conditional)
-
-(interpolated (macro_arg) @embedded) 
-
-(comment) @comment
 
 [
   (operator)
   "="
   "#"
+  "@"
 ] @operator
 
 [
-  "."
   ","
-  "/"
-  "-"
 ] @punctuation.delimiter
 
 [
   "("
   ")"
+  "-("
   ")+"
 ] @punctuation.bracket
 
-(section) @namespace
+; (section) @namespace
+(comment) @comment

@@ -1,0 +1,87 @@
+===
+.eqv TestSymbol, 1
+===
+.eqv TestSymbol, 1
+---
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (decimal_literal)))
+
+===
+  .EQUIV TestSymbol, 1
+===
+  .EQUIV TestSymbol, 1
+---
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (decimal_literal)))
+
+===
+.equiv TestSymbol, 1
+===
+.equiv TestSymbol, 1
+---
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (decimal_literal)))
+
+===
+.equiv ImmediateArg, .+2
+===
+.equiv ImmediateArg, .+2
+---
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (binary_expression
+      left: (location_counter)
+      operator: (operator)
+      right: (decimal_literal))))
+
+===
+.equiv ImmediateArg, . +  2
+===
+.equiv ImmediateArg, . +  2
+---
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (binary_expression
+      left: (location_counter)
+      operator: (operator)
+      right: (decimal_literal))))
+
+===
+.equiv ImmediateArg, 1$ + Label/0b10 * 010 + 10 - 0x10
+===
+.equiv ImmediateArg, 1$ + Label/0b10 * 010 + 10 - 0x10
+---
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (binary_expression
+      left: (binary_expression
+        left: (binary_expression
+          left: (local_label)
+          operator: (operator)
+          right: (binary_expression
+            left: (binary_expression
+              left: (symbol)
+              operator: (operator)
+              right: (binary_literal))
+            operator: (operator)
+            right: (octal_literal)))
+        operator: (operator)
+        right: (decimal_literal))
+      operator: (operator)
+      right: (hexadecimal_literal))))
+

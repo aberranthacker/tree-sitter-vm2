@@ -1,0 +1,39 @@
+================================================================================
+.equiv Size, (end - start)
+================================================================================
+.equiv Size, (end - start)
+--------------------------------------------------------------------------------
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (parenthesized_expression
+      (binary_expression
+        left: (symbol)
+        operator: (operator)
+        right: (symbol)))))
+
+================================================================================
+.equiv SomeValue, ((2 + AnotherValue) * 03 / 0x04 % 0b1111)
+================================================================================
+.equiv SomeValue, ((2 + AnotherValue) * 03 / 0x04 % 0b1111)
+--------------------------------------------------------------------------------
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (parenthesized_expression
+      (binary_expression
+        left: (binary_expression
+          left: (binary_expression
+            left: (parenthesized_expression
+              (binary_expression
+                left: (decimal_literal)
+                operator: (operator)
+                right: (symbol)))
+            operator: (operator)
+            right: (octal_literal))
+          operator: (operator)
+          right: (hexadecimal_literal))
+        operator: (operator)
+        right: (binary_literal)))))

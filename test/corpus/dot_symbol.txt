@@ -1,0 +1,30 @@
+================================================================================
+Dot symbol as operand
+================================================================================
+
+    BR .
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (relative_value
+        value: (location_counter)))))
+
+================================================================================
+Dot symbol in expression
+================================================================================
+BR .-4
+--------------------------------------------------------------------------------
+
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (relative_value
+        value: (binary_expression
+          left: (location_counter)
+          operator: (operator)
+          right: (decimal_literal))))))

@@ -1,0 +1,41 @@
+===
+Symbol = Symbol + 2
+===
+Symbol = Symbol + 2
+---
+(source_file
+  (symbol_assignment
+    (symbol)
+    value: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (decimal_literal))))
+
+===
+.equ Symbol, Symbol + 2
+===
+.equ Symbol, Symbol + 2
+---
+(source_file
+  (symbol_assignment
+    (directive_mnemonic)
+    (symbol)
+    value: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (decimal_literal))))
+
+
+===
+.set Symbol, Symbol + 2
+===
+.set Symbol, Symbol + 2
+---
+(source_file
+  (symbol_assignment
+    (directive_mnemonic)
+    (symbol)
+    value: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (decimal_literal))))

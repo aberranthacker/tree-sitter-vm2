@@ -1,13 +1,7 @@
-// TODO:
-// < > brackets on macro parameters
-// C Style macros
-// Square brackets
-// Extern keyword
-
-const binaryOperators = [
+const binaryOperators = [ // {{{
   "||",
   "&&",
-  choice("==", "!=", "=", "<>"),
+  choice("==", "!=", "<>"),
   choice("<", ">", ">=", "<="),
   choice("+", "-"),
   choice("*", "/", "%", "//"),
@@ -15,15 +9,10 @@ const binaryOperators = [
   choice("^", "~"),
   "&",
   choice("<<", ">>"),
-];
-
-const PREC = {
-  unary: binaryOperators.length + 1,
-  address: 1,
-  definition: 2,
-};
-
-const instructions = [
+]; // }}}
+const unaryPrec = binaryOperators.length + 1;
+const instructions = [ // {{{
+  // single operand
   "clr",
   "clrb",
   "com",
@@ -52,6 +41,9 @@ const instructions = [
   "sbc",
   "sbcb",
   "sxt",
+  "mfps",
+  "mtps",
+  // double operand
   "mov",
   "movb",
   "cmp",
@@ -69,9 +61,41 @@ const instructions = [
   "ash",
   "ashc",
   "xor",
-];
-
-const instructionsNoOperands = [
+  // program control
+  "br",
+  "bne",
+  "bnz",
+  "beq",
+  "bze",
+  "bpl",
+  "bmi",
+  "bvc",
+  "bvs",
+  "bcc",
+  "bcs",
+  "bge",
+  "blt",
+  "bgt",
+  "ble",
+  "bhi",
+  "blos",
+  "bhis",
+  "blo",
+  "jmp",
+  "jsr",
+  "call",
+  "rts",
+  "mark",
+  "sob",
+  "emt",
+  "trap",
+  "fadd",
+  "fsub",
+  "fmul",
+  "fdiv",
+]; // }}}
+const instructionsNoOperands = [ // {{{
+  "return",
   "halt",
   "wait",
   "nop",
@@ -80,206 +104,147 @@ const instructionsNoOperands = [
   "iot",
   "reset",
   "rtt",
-];
-
-const directives = [
-  "align",
-  "cnop",
-  "cargs",
-  "comm",
-  "echo",
-  "end",
-  "fail",
-  "fpu",
-  "idnt",
-  "jumpptr",
-  "llen",
-  "load",
-  "machine",
-  "mmu",
-  "offset",
-  "opword",
-  "org",
-  "output",
-  "plen",
-  "printt",
-  "printv",
-  "record",
-  "rorg",
-  "rsset",
-  "setfo",
-  "setso",
-  "spc",
-  "ttl",
-];
-
-const directiveNoOperands = [
-  "clrfo",
-  "clrso",
-  "comment",
-  "einline",
-  "even",
-  "inline",
-  "list",
-  "mexit",
-  "nolist",
-  "nopage",
-  "odd",
-  "page",
-  "popsection",
-  "pushsection",
-  "rsreset",
-];
-
-const sectionTypes = [
-  "bss",
-  "bss_c",
-  "bss_f",
-  "bss_p",
-  "text",
-  "text_c",
-  "text_f",
-  "text_p",
-  "code",
-  "code_c",
-  "code_f",
-  "code_p",
-  "cseg",
-  "data",
-  "data_c",
-  "data_f",
-  "data_p",
-  "dseg",
-];
-
-const conditionalExp = [
-  "if",
-  "ifeq",
-  "ifne",
-  "ifgt",
-  "ifge",
-  "iflt",
-  "ifle",
-  "ifb",
-  "ifnb",
-];
-const conditionalNoop = ["if1", "if2", "ifp1"];
-const conditionalComp = ["ifc", "ifnc"];
-const conditionalSymbol = ["ifd", "ifnd", "ifmacrod", "ifmacrond"];
-
-const memoryTypes = ["chip", "fast"];
+  "clc",
+  "clv",
+  "clz",
+  "cln",
+  "ccc",
+  "sec",
+  "sev",
+  "sez",
+  "sen",
+  "scc",
+]; // }}}
+const directives = [ // {{{
+  ".align",   // .align [abs-expr[, abs-expr[, abs-expr]]]
+  ".ascii",
+  ".asciz",
+  ".balingn", // .balign[wl] [abs-expr[, abs-expr[, abs-expr]]]
+  ".error",
+  ".print",   // .print string
+  ".warning",
+  ".global",  // .global symbol, .globl symbol
+]; // }}}
+const directiveNoOperands = [ // {{{
+  ".even",
+  ".list",
+  ".nolist",
+  ".eject",
+  ".err",
+  ".ident",
+]; // }}}
+const sectionTypes = [ // {{{
+  ".text",
+  ".data",
+  ".bss",
+  ".subsection",
+  ".pushsection",
+  ".popsection",
+  ".previous",
+]; // }}}
+const conditionalExp = [ // {{{
+  ".if",
+  ".ifb",
+  ".ifeq",
+  ".ifge",
+  ".ifgt",
+  ".ifle",
+  ".iflt",
+  ".ifnb",
+  ".ifne",
+]; // }}}
+const conditionalComp = [".ifc", ".ifnc", ".ifeqs", ".ifneqs"];
+const conditionalSymbol = [".ifdef", ".ifndef", ".ifnotdef"];
 
 const registerNames = ["sp", "pc"];
 
 module.exports = grammar({
   name: "vm2",
-
-  word: ($) => $._symbol_chars,
-
-  extras: () => [], // handle whitespace manually
-
-  conflicts: ($) => [
-    [$.element_list],
-    [$._start_line, $._label_colon, $.external_label],
-  ],
-
-  inline: ($) => [$._address],
+  extras: ($) => [" ", "\t", "\r", $.comment,],
 
   rules: {
-    source_file: ($) =>
-      seq(optional($._nl), prec.left(listSep($._element, $._nl))),
+    source_file: ($) => repeat($._line),
 
-    element_list: ($) => listSep($._element, $._nl),
+    _line: ($) => prec.right(
+      choice(
+        seq($._element, "\n"),
+        "\n",
+        $._element,
+      ),
+    ),
+
+    elements: ($) => prec.right(repeat1($._block_line)),
+    _block_line: ($) =>
+      choice(
+        $._element, "\n",
+        "\n",
+      ),
 
     _element: ($) =>
       choice(
         $._definition,
         $._statement,
         $._standalone_label,
-        $._standalone_comment,
         $._block,
       ),
 
-    _standalone_label: ($) => seq($._label, optional($.comment)),
-
-    _standalone_comment: ($) => prec(-1, seq(optional($._ws), $.comment)),
-
     _definition: ($) =>
       choice(
-        $.macro_definition,
         $.symbol_definition,
         $.symbol_assignment,
-        $.offset_definition,
-        $.register_definition,
-        $.register_list_definition,
+        $.macro_definition,
       ),
 
     _statement: ($) =>
       seq(
-        $._start_line,
+        optional(prec(-1, repeat1($.label))),
         choice(
           $.instruction,
-          $.macro_call,
-          $.conditional_instruction,
           $.directive,
-          $.section,
-          $.opt,
+          //$.section,
+          $.data_constant,
+          $.data_space,
           $.include,
           $.include_bin,
-          $.include_dir,
-          $.external_definition,
-          $.external_reference,
-          $._data,
+          $.title,
+          //$.external_definition,
+          $.macro_call,
         ),
-        optional($._end_line),
       ),
 
-    _block: ($) => choice($.repeat, $.conditional, $.rem, $.end),
+    _block: ($) => choice(
+      $.repeat,
+      $.conditional,
+      //$.end,
+    ),
 
-    _start_line: ($) => choice($._label, $._ws),
+    _standalone_label: ($) => prec(-1, repeat1($.label)),
 
     //----------------------------------------------------------------------
     // Labels:
     //----------------------------------------------------------------------
-
-    _label: ($) =>
-      choice(alias($._label_definition, $.label), $.external_label),
-
-    _name: ($) => field("name", $._identifier),
-
-    _label_definition: ($) =>
-      seq(choice($._label_colon, $._name), optional($._ws)),
-
-    // colon required with leading whitespace
-    _label_colon: ($) => seq(optional($._ws), $._name, ":"),
-
-    // double colon makes label externally visible
-    external_label: ($) => seq(optional($._ws), $._name, "::", optional($._ws)),
+    label: ($) => seq(field("name", $._identifier), ":"),
 
     //----------------------------------------------------------------------
     // Comments:
     //----------------------------------------------------------------------
-
-    comment: ($) => choice($._comment_star, $._comment_hash),
-    _comment_hash: () => /#[^\n\r]*/,
-    _comment_star: () => /\*[^\n\r]*/,
-
-    _end_line: ($) =>
+    // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890
+    comment: (_) => token(
       choice(
-        seq(optional($._ws), alias($._comment_hash, $.comment)),
-        // Start comment must have whitespace to avoid conflict with multiplication operator
-        // TODO: would be better if whitepace didn't form part of comment pattern
-        // This would be handled by positional comment if I could get precedence right
-        alias(/\s+\*.+/, $.comment),
-        seq($._ws, alias(/[^\r\n]+/, $.comment)), // Positional comment - any chars allowed after statement
+        seq(";", /[^\r\n]*/),
+        seq(
+          '/*',
+          /[^*]*\*+([^/*][^*]*\*+)*/,
+          '/',
+        ),
       ),
+    ),
 
     //----------------------------------------------------------------------
     // Mnemonics:
     //----------------------------------------------------------------------
 
     // instructions:
-
     _instruction_mnemonic_op: ($) =>
       alias(mnemonicChoice(instructions), $.instruction_mnemonic),
     _instruction_mnemonic_noop: ($) =>
@@ -287,373 +252,216 @@ module.exports = grammar({
 
     // directives:
 
-    _data_constant_mnemonic: ($) =>
-      alias(mnemonicChoice(["dc", "dr"]), $.directive_mnemonic),
-    _data_constant_short_mnemonic: ($) =>
-      alias(mnemonicChoice(["db", "dw", "dl"]), $.directive_mnemonic),
+    _data_constant_mnemonic: ($) => alias(caseInsensitive(".dc"), $.directive_mnemonic),
+    _data_constant_short_mnemonic: ($) => alias(mnemonicChoice([".byte", ".word"]), $.directive_mnemonic),
     _data_space_mnemonic: ($) =>
-      alias(mnemonicChoice(["dcb", "blk"]), $.directive_mnemonic),
+      alias(caseInsensitive(".ds"), $.directive_mnemonic),
     _data_space_short_mnemonic: ($) =>
-      alias(caseInsensitive("ds"), $.directive_mnemonic),
+      alias(mnemonicChoice([".dcb", ".space", ".skip"]), $.directive_mnemonic),
+
+    _symbol_definition_mnemonic: ($) =>
+      alias(mnemonicChoice(['.equiv', '.eqv']), $.directive_mnemonic),
+    _symbol_assignment_mnemonic: ($) =>
+      alias(mnemonicChoice([".equ", ".set"]), $.directive_mnemonic),
+
     _directive_mnemonic_noop: ($) =>
       alias(mnemonicChoice(directiveNoOperands), $.directive_mnemonic),
     _directive_mnemonic_op: ($) =>
       alias(mnemonicChoice(directives), $.directive_mnemonic),
-    _external_definition_mnemonic: ($) =>
-      alias(mnemonicChoice(["xdef", "public", "weak"]), $.directive_mnemonic),
-    _external_reference_mnemonic: ($) =>
-      alias(mnemonicChoice(["xref", "nref"]), $.directive_mnemonic),
-    _incbin_mnemonic: ($) =>
-      alias(caseInsensitive("incbin"), $.directive_mnemonic),
-    _incdir_mnemonic: ($) =>
-      alias(caseInsensitive("incdir"), $.directive_mnemonic),
-    _include_mnemonic: ($) =>
-      alias(caseInsensitive("include"), $.directive_mnemonic),
-    _register_definition_mnemonic: ($) =>
-      alias(mnemonicChoice(["equr", "fequr"]), $.directive_mnemonic),
-    _register_list_definition_mnemonic: ($) =>
-      alias(
-        mnemonicChoice(["equrl", "fequrl", "reg", "freg"]),
-        $.directive_mnemonic,
-      ),
-    _rs_mnemonic: ($) => alias(caseInsensitive("rs"), $.directive_mnemonic),
-    _section_mnemonic: ($) =>
-      alias(caseInsensitive("section"), $.directive_mnemonic),
-    _symbol_assignment_mnemonic: ($) =>
-      alias(caseInsensitive("set"), $.directive_mnemonic),
-    _symbol_definition_mnemonic: ($) =>
-      alias(mnemonicChoice(["equ", "fequ"]), $.directive_mnemonic),
+
+    _incbin_mnemonic:  ($) => alias(caseInsensitive(".incbin"), $.directive_mnemonic),
+    _include_mnemonic: ($) => alias(caseInsensitive(".include"), $.directive_mnemonic),
+    _title_mnemonic:   ($) => alias(caseInsensitive(".title"), $.directive_mnemonic),
+
+    _conditional_mnemonic_exp:    ($) => alias(mnemonicChoice(conditionalExp), $.control_mnemonic),
+    _conditional_mnemonic_comp:   ($) => alias(mnemonicChoice(conditionalComp), $.control_mnemonic),
+    _conditional_mnemonic_symbol: ($) => alias(mnemonicChoice(conditionalSymbol), $.control_mnemonic),
+    _else_mnemonic:  ($) => alias(mnemonicChoice([".else", ".elseif"]), $.control_mnemonic),
+    _endif_mnemonic: ($) => alias(caseInsensitive(".endif"), $.control_mnemonic),
+
+    _irp_mnemonic:  ($) => alias(caseInsensitive(".irp"), $.control_mnemonic),
+    _irpc_mnemonic: ($) => alias(caseInsensitive(".irpc"), $.control_mnemonic),
+    _rept_mnemonic: ($) => alias(caseInsensitive(".rept"), $.control_mnemonic),
+    _endr_mnemonic: ($) => alias(caseInsensitive(".endr"), $.control_mnemonic),
 
     // control:
-
-    _conditional_mnemonic_exp: ($) =>
-      alias(mnemonicChoice(conditionalExp), $.control_mnemonic),
-    _conditional_mnemonic_noop: ($) =>
-      alias(mnemonicChoice(conditionalNoop), $.control_mnemonic),
-    _conditional_mnemonic_comp: ($) =>
-      alias(mnemonicChoice(conditionalComp), $.control_mnemonic),
-    _conditional_mnemonic_symbol: ($) =>
-      alias(mnemonicChoice(conditionalSymbol), $.control_mnemonic),
-    _conditional_mnemonic_inline: ($) =>
-      alias(caseInsensitive("iif"), $.control_mnemonic),
-    _else_mnemonic: ($) =>
-      alias(mnemonicChoice(["else", "elseif"]), $.control_mnemonic),
-    _endif_mnemonic: ($) =>
-      alias(mnemonicChoice(["endif", "endc"]), $.control_mnemonic),
-    _macro_mnemonic: ($) => alias(caseInsensitive("macro"), $.control_mnemonic),
-    _endm_mnemonic: ($) => alias(caseInsensitive("endm"), $.control_mnemonic),
-    _rem_mnemonic: ($) => alias(caseInsensitive("rem"), $.control_mnemonic),
-    _erem_mnemonic: ($) => alias(caseInsensitive("erem"), $.control_mnemonic),
-    _rept_mnemonic: ($) => alias(caseInsensitive("rept"), $.control_mnemonic),
-    _endr_mnemonic: ($) => alias(caseInsensitive("endr"), $.control_mnemonic),
-    _end_mnemonic: ($) => alias(caseInsensitive("end"), $.control_mnemonic),
-
-    section_type: () => choice(...sectionTypes.map(caseInsensitive)),
-    memory_type: () => choice(...memoryTypes.map(caseInsensitive)),
-
-    opt: ($) =>
-      seq(
-        field("mnemonic", alias(caseInsensitive("opt"), $.directive_mnemonic)),
-
-        $._ws,
-        field("options", $.option_list),
-      ),
-
-    option_list: ($) => listSep($.option, $._sep),
-
-    option: () =>
-      choice(
-        /[aAcCdDlLpOoPsStTwWxX][+-]/,
-        /[oO][a-zA-Z0-9]+[+-]/,
-        /[lL][0-9]+/,
-        // TODO: p=<type>[/<type>]
-        ...[
-          "autopc",
-          "case",
-          "chkpc",
-          "debug",
-          "symtab",
-          "type",
-          "warn",
-          "xdebug",
-          "noautopc",
-          "nocase",
-          "nochkpc",
-          "nodebug",
-          "nosymtab",
-          "notype",
-          "nowarn",
-          "noxdebug",
-        ].map(caseInsensitive),
-      ),
+    _macro_mnemonic: ($) => alias(caseInsensitive(".macro"), $.control_mnemonic),
+    _endm_mnemonic:  ($) => alias(caseInsensitive(".endm"), $.control_mnemonic),
 
     // Instruction:
 
     instruction: ($) =>
-      prec.right(
-        choice(
-          // Instruction with operands
-          seq(
-            field("mnemonic", $._instruction_mnemonic_op),
-            optional(seq(".", field("size", $._size))),
-            seq($._ws, field("operands", $.operand_list)),
-          ),
-          // Instruction with no operands
-          seq(
-            field("mnemonic", $._instruction_mnemonic_noop),
-            optional(seq(".", field("size", $._size))),
-          ),
+      choice(
+        // Instruction with operands
+        seq(
+          field("mnemonic", $._instruction_mnemonic_op),
+          field("operands", $.operand_list),
         ),
+        // Instruction with no operands
+        field("mnemonic", $._instruction_mnemonic_noop),
       ),
 
-    operand_list: ($) => listSep($._operand, $._sep),
+    operand_list: ($) => seq(optional(seq($._operand, ",")), $._operand),
 
-    _operand: ($) =>
-      choice($._effective_address, $.register_list, $._expression),
-
-    _size: ($) => choice($.size, $.macro_arg),
-    size: () => /[bwlsdxqBWLSDXQ]/,
-
-    //----------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     // Directives:
-    //----------------------------------------------------------------------
-
+    //-------------------------------------------------------------------------
     directive: ($) =>
       prec.right(
         choice(
           seq(
             field("mnemonic", $._directive_mnemonic_noop),
-            optional(seq(".", field("size", $._size))),
           ),
           seq(
             field("mnemonic", $._directive_mnemonic_op),
-            optional(seq(".", field("size", $._size))),
-            $._ws,
-            field("operands", $.operand_list),
+            field("operands", $.expressions),
           ),
         ),
       ),
 
-    // section
-
-    section: ($) =>
-      choice(
-        seq(field("type", $.section_type)),
-        seq(
-          $._section_mnemonic,
-          $._ws,
-          field("name", choice($._identifier, $.string_literal)),
-          optional(
-            seq(
-              $._sep,
-              field("type", $.section_type),
-              optional(
-                seq(
-                  $._sep,
-                  field(
-                    "memory_type",
-                    choice($.memory_type, $._numeric_literal),
-                  ),
-                ),
-              ),
-              optional($._sep),
-            ),
-          ),
-        ),
-      ),
-
-    // includes
-
-    include: ($) => seq($._include_mnemonic, $._ws, field("path", $.path)),
-    include_dir: ($) => seq($._incdir_mnemonic, $._ws, field("path", $.path)),
-    include_bin: ($) =>
-      seq(
-        $._incbin_mnemonic,
-        $._ws,
-        field("path", $.path),
-        optional(
-          seq(
-            $._sep,
-            field("offset", $._expression),
-            optional(seq(",", field("length", $._expression))),
-            optional($._sep),
-          ),
-        ),
-      ),
-
-    path: ($) => choice(/[^"'\s,]+/, $.string_literal),
-
-    // data:
-
-    _data: ($) => choice($.data_constant, $.data_space),
-
-    data_constant: ($) =>
+    data_constant: ($) => prec.right(2,
       seq(
         choice(
           seq(
             field("mnemonic", $._data_constant_mnemonic),
-            optional(seq(".", field("size", $._size))),
+            optional(field("size", $.dc_size)),
           ),
           field("mnemonic", $._data_constant_short_mnemonic),
         ),
-        $._ws,
-        field("values", $.expression_list),
+        optional(field("values", $.expressions)),
+      ),
+    ),
+
+    data_space: ($) => prec.right(2,
+      seq(
+        choice(
+          seq(
+            field("mnemonic", $._data_space_mnemonic),
+            optional(field("size", $.ds_size)),
+          ),
+          field("mnemonic", $._data_space_short_mnemonic),
+        ),
+        field("number", $._expression),
+        optional(seq(",", field("fill", $._expression))),
+      ),
+    ),
+
+    dc_size: (_) => token.immediate(seq(".", /[abdlswxABDLSWX]/)),
+    ds_size: (_) => token.immediate(seq(".", /[bdlpswxBDLPSWX]/)),
+
+    include: ($) => seq($._include_mnemonic, field("path", $.path)),
+
+    include_bin: ($) =>
+      seq(
+        $._incbin_mnemonic,
+        field("path", $.path),
+        optional(
+          seq(
+            ",",
+            field("offset", $._expression),
+            optional(seq(",", field("length", $._expression))),
+          ),
+        ),
       ),
 
-    data_space: ($) =>
-      choice(
-        seq(
-          field("mnemonic", $._data_space_short_mnemonic),
-          optional(seq(".", field("size", $._size))),
-          $._ws,
-          field("length", $._expression),
-        ),
-        seq(
-          field("mnemonic", $._data_space_mnemonic),
-          optional(seq(".", field("size", $._size))),
-          $._ws,
-          field("length", $._expression),
-          optional(seq($._sep, field("fill", $._expression))),
-          optional($._sep),
-        ),
-      ),
+    path: ($) => choice(/[^"'\s]+/, $.string_literal),
+
+    title: ($) => seq($._title_mnemonic, field("heading", $.string_literal)),
 
     // Macro call:
 
     macro_call: ($) =>
-      prec.right(
+      prec.right(-1,
         seq(
-          $._name,
-          optional(seq(".", field("qualifier", $._size))),
-          optional(seq($._ws, field("operands", $.operand_list))),
-          optional($._ws),
+          field("name", $._identifier),
+          optional(field("operands", $.arguments_list)),
         ),
       ),
+    arguments_list: ($) => seq(repeat(seq($._operand, ",")), $._operand),
 
-    //----------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     // Block / multiline:
-    //----------------------------------------------------------------------
-
-    repeat: ($) =>
+    //-------------------------------------------------------------------------
+    repeat: ($) => choice(
       seq(
-        $._start_line,
-        $._rept_mnemonic,
-        $._ws,
-        field("count", $._expression),
-        optional($._end_line),
-        $._nl,
-        optional(seq(field("body", $.element_list), $._nl)),
-        $._start_line,
+        $._irp_mnemonic,
+        $.symbol,
+        optional(seq(",", field("values", $.expressions))),
+        "\n",
+        optional(field("body", $.elements)),
         $._endr_mnemonic,
-        optional($._end_line),
       ),
+      seq(
+        $._irpc_mnemonic,
+        $.symbol,
+        optional(field("values", $._symbol_chars)),
+        "\n",
+        optional(field("body", $.elements)),
+        $._endr_mnemonic,
+      ),
+      seq(
+        $._rept_mnemonic,
+        field("count", $._expression),
+        "\n",
+        optional(field("body", $.elements)),
+        $._endr_mnemonic,
+      ),
+    ),
+
+    expressions: ($) => seq(repeat(seq($._expression, ",")), $._expression),
 
     conditional: ($) =>
       seq(
-        $._start_line,
         $._conditional_block_start,
         optional(
           seq(
-            field("consequent", $.element_list),
-            $._nl,
-            optional(
+            field("consequent", $.elements),
+            repeat(
               seq(
                 $._conditional_block_else,
-                field("alternate", $.element_list),
-                $._nl,
+                field("alternate", $.elements),
               ),
             ),
           ),
         ),
         $._conditional_block_end,
-        optional($._end_line),
       ),
 
-    _conditional_block_else: ($) =>
-      prec.dynamic(
-        1,
-        seq($._start_line, $._else_mnemonic, optional($._end_line), $._nl),
-      ),
+    _conditional_block_else: ($) => prec.dynamic(1,
+      seq($._else_mnemonic, "\n"),
+    ),
 
     _conditional_block_start: ($) =>
       seq(
         choice(
           $._conditional_expression,
-          $._conditional_noop,
           $._conditional_comparison,
           $._conditional_symbol,
         ),
-        optional($._end_line),
-        $._nl,
+        "\n",
       ),
 
-    _conditional_block_end: ($) => seq($._start_line, $._endif_mnemonic),
+    _conditional_block_end: ($) => $._endif_mnemonic,
 
     _conditional_expression: ($) =>
       seq(
         field("mnemonic", $._conditional_mnemonic_exp),
-        $._ws,
         field("test", $._expression),
       ),
-
-    _conditional_noop: ($) =>
-      seq(field("mnemonic", $._conditional_mnemonic_noop)),
 
     _conditional_comparison: ($) =>
       seq(
         field("mnemonic", $._conditional_mnemonic_comp),
-        $._ws,
         field("left", $._expression),
-        $._sep,
+        ",",
         field("right", $._expression),
-        optional($._sep),
+        optional(","),
       ),
 
     _conditional_symbol: ($) =>
       seq(
         field("mnemonic", $._conditional_mnemonic_symbol),
-        $._ws,
         field("test", $._identifier),
-      ),
-
-    conditional_instruction: ($) =>
-      seq(
-        $._conditional_mnemonic_inline,
-        $._ws,
-        field("test", $._expression),
-        $._ws,
-        field("consequent", $.instruction),
-      ),
-
-    rem: ($) =>
-      seq(
-        $._start_line,
-        $._rem_mnemonic,
-        optional($._end_line),
-        $._nl,
-        alias(repeat(seq(repeat(/[^\n]/), $._nl)), $.comment),
-        alias(/\s+erem/, $.control_mnemonic),
-        optional($._end_line),
-      ),
-
-    end: ($) =>
-      prec.right(seq($._start_line, $._end_mnemonic, listSep(/.*/, $._nl))),
-
-    macro_definition: ($) =>
-      prec(
-        PREC.definition,
-        seq(
-          choice(
-            seq($._label_definition, $._macro_mnemonic),
-            seq($._ws, $._macro_mnemonic, $._ws, field("name", $.symbol)),
-          ),
-          optional($._end_line),
-          $._nl,
-          optional(seq(field("body", $.element_list), $._nl)),
-          $._start_line,
-          $._endm_mnemonic,
-          optional($._end_line),
-        ),
       ),
 
     //----------------------------------------------------------------------
@@ -661,217 +469,143 @@ module.exports = grammar({
     //----------------------------------------------------------------------
 
     symbol_definition: ($) =>
-      prec(
-        PREC.definition,
-        seq(
-          $._label_definition,
-          choice(
-            seq(
-              "=",
-              optional(seq(".", field("size", alias(/[sdxpSDXP]/, $.size)))),
-              optional($._ws),
-            ),
-            seq(
-              field("mnemonic", $._symbol_definition_mnemonic),
-              optional(seq(".", field("size", alias(/[sdxpSDXP]/, $.size)))),
-              $._ws,
-            ),
-          ),
-          field("value", $._expression),
-          optional($._end_line),
-        ),
+      seq(
+        $._symbol_definition_mnemonic,
+        $.symbol,
+        ",",
+        field("value", $._expression),
       ),
 
     symbol_assignment: ($) =>
-      prec(
-        PREC.definition,
-        seq(
-          $._label_definition,
-          $._symbol_assignment_mnemonic,
-          optional($._ws),
-          field("value", $._expression),
-          optional($._end_line),
-        ),
-      ),
-
-    offset_definition: ($) =>
-      prec(
-        PREC.definition,
-        seq(
-          $._label_definition,
-          $._rs_mnemonic,
-          optional(seq(".", field("size", $._size))),
-          $._ws,
-          field("length", $._expression),
-          optional($._end_line),
-        ),
-      ),
-
-    register_definition: ($) =>
-      prec(
-        PREC.definition,
-        seq(
-          $._label_definition,
-          field("mnemonic", $._register_definition_mnemonic),
-          optional($._ws),
-          field(
-            "value",
-            choice(
-              $.data_register,
-              $.address_register,
-              $.float_register,
-              $.named_register,
-            ),
+      seq(
+        choice(
+          seq(
+            $.symbol,
+            "=",
           ),
-          optional($._end_line),
+          seq(
+            $._symbol_assignment_mnemonic,
+            $.symbol,
+            ",",
+          ),
+        ),
+        field("value", $._expression),
+      ),
+
+    macro_definition: ($) => prec.right(
+      seq(
+        $._macro_mnemonic,
+        field("name", $.symbol),
+        optional($.macro_arguments),
+        "\n",
+        optional(field("body", $.elements)),
+        $._endm_mnemonic,
+      )),
+
+    macro_arguments: ($) =>
+      seq(
+        choice(
+          $._macarg_vararg,
+          seq(
+            $._macargs,
+            repeat(
+              seq(",", $._macargs)
+            ),
+            optional(seq(",", $._macarg_vararg)),
+          ),
         ),
       ),
 
-    register_list_definition: ($) =>
-      prec(
-        PREC.definition,
-        seq(
-          $._label_definition,
-          field("mnemonic", $._register_list_definition_mnemonic),
-          optional($._ws),
-          field("value", choice($.register_list)),
-          optional($._end_line),
-        ),
-      ),
+    _macargs: ($) => seq(
+      choice(
+        $._macarg,
+        $._macarg_req,
+        $._macarg_default,
+      )
+    ),
 
-    external_definition: ($) =>
-      seq(
-        field("mnemonic", $._external_definition_mnemonic),
-        $._ws,
-        field("symbols", $.symbol_list),
-      ),
-
-    external_reference: ($) =>
-      seq(
-        field("mnemonic", $._external_reference_mnemonic),
-        $._ws,
-        field("symbols", $.symbol_list),
-      ),
+    _macarg: ($) => field("macarg", $.symbol),
+    _macarg_req: ($) => seq(field("macarg_req", $.symbol), ":req"),
+    _macarg_default: ($) => seq(
+      field("macarg", $.symbol),
+      "=",
+      field("default_value", $._expression)
+    ),
+    _macarg_vararg: ($) => seq(field("macarg_vararg", $.symbol), ":vararg"),
 
     //----------------------------------------------------------------------
     // Effective addresses:
     //----------------------------------------------------------------------
-
-    _effective_address: ($) =>
+    _operand: ($) =>
       choice(
         $._register,
+        $.indirect_address,
+        $.address_postinc,
+        $.indirect_address_postinc,
+        $.address_predec,
+        $.indirect_address_predec,
+        $.idx_address,
+        $.indirect_idx_address,
+
         $.immediate_value,
         $.absolute_value,
-        $.indirect_address,
-        $.indirect_address_postinc,
-        $.indirect_address_predec,
-        $.offset_address,
-        $.offset_address_idx,
+        $.relative_value,
+        $.indirect_relative_value,
       ),
 
-    immediate_value: ($) => seq("#", field("value", $._expression)),
-
-    absolute_value: ($) =>
-      choice(
-        seq(field("value", $._expression), ".", field("size", $._size)),
-        seq("(", field("value", $._expression), ").", field("size", $._size)),
-      ),
-
-    _register: ($) =>
-      choice(
-        $.named_register,
-        $.data_register,
-        $.address_register,
-        $.float_register,
-      ),
-
+    register: () => /[rR][0-7]/,
     named_register: () => choice(...registerNames.map(caseInsensitive)),
+    _register: ($) => choice($.named_register, $.register),
 
-    data_register: () => /[dD][0-7]/,
-    address_register: () => /[aA][0-7]/,
-    float_register: () => /[fF][pP][0-7]/,
-
-    _address: ($) =>
-      field(
-        "register",
-        choice($.address_register, $.named_register, $._identifier),
-      ),
-
-    indirect_address: ($) => prec(2, seq("(", $._address, ")")),
-
-    indirect_address_postinc: ($) => seq("(", $._address, ")+"),
-
-    indirect_address_predec: ($) => prec(2, seq("-", "(", $._address, ")")),
-
-    offset_address: ($) =>
-      choice(
-        seq("(", field("offset", $._expression), ",", $._address, ")"),
-        seq(field("offset", $._expression), "(", $._address, ")"),
-      ),
-
-    offset_address_idx: ($) =>
-      prec(
-        1,
-        choice(
-          seq(
-            "(",
-            field("offset", choice($._expression, $._identifier)),
-            ",",
-            $._address,
-            ",",
-            field("idx", $.idx),
-            ")",
-          ),
-          seq(
-            optional(field("offset", $._expression)),
-            "(",
-            $._address,
-            ",",
-            field("idx", $.idx),
-            ")",
-          ),
-        ),
-      ),
-
-    idx: ($) =>
+    // General Register Addressing
+    // Mode 0: Register                OPR R
+    _register: ($) => choice($.named_register, $.register),
+    // Mode 1: Register deferred       OPR (R)
+    indirect_address: ($) => seq("(", $._register, ")"),
+    // Mode 2: Auto-increment          OPR (R)+
+    address_postinc: ($) => seq("(", $._register, ")+"),
+    // Mode 3: Auto-increment deferred OPR @(R)+
+    indirect_address_postinc: ($) => seq("@", "(", $._register, ")+"),
+    // Mode 4: Auto-decrement          OPR -(R)
+    address_predec: ($) => seq("-(", $._register, ")"),
+    // Mode 5: Auto-decrement deferred OPR @-(R)
+    indirect_address_predec: ($) => seq("@", "-", "(", $._register, ")"),
+    // Mode 6: Index                   OPR X(R)
+    idx_address: ($) =>
       seq(
-        field(
-          "register",
-          choice(
-            $.data_register,
-            $.address_register,
-            $.named_register,
-            $._identifier,
-          ),
-        ),
-        optional(seq(".", field("size", $._size))),
-        optional(seq("*", field("scale", $._expression))),
+        field("offset", $._expression),
+        "(",
+        $._register,
+        ")",
       ),
-
-    //----------------------------------------------------------------------
-    // Register lists:
-    //----------------------------------------------------------------------
-
-    register_list: ($) =>
-      seq($._register_list_item, repeat(seq("/", $._register_list_item))),
-
-    _register_list_item: ($) => prec(-1, choice($.register_range, $._register)),
-
-    register_range: ($) =>
+    // Mode 7: Index deferred          OPR @X(R)
+    indirect_idx_address: ($) =>
       seq(
-        field("from", $._register),
-        "-",
-        field("to", choice($._register, $.register_number)),
+        "@",
+        field("offset", $._expression),
+        "(",
+        $._register,
+        ")",
       ),
 
-    register_number: () => /[0-7]/,
+    // Program Counter Addressing
+    // Mode 2: Immediate          OPR #n
+    immediate_value: ($) => seq(choice("#", "$"), field("value", $._expression)),
+    // Mode 3: Absolute           OPR @#A
+    absolute_value: ($) => seq("@", choice("#", "$"), field("value", $._expression)),
+    // Mode 6: Relative           OPR A
+    relative_value: ($) => field("value", $._expression),
+    // Mode 7: Relative deferred  OPR @A
+    indirect_relative_value: ($) => seq("@", field("value", $._expression)),
 
-    //----------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     // Expressions:
-    //----------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 
     _expression: ($) =>
       choice(
+        $.location_counter,
+        $.local_label,
         $._numeric_literal,
         $.string_literal,
         $.unary_expression,
@@ -880,14 +614,13 @@ module.exports = grammar({
         $._identifier,
       ),
 
-    expression_list: ($) => listSep($._expression, $._sep),
+    parenthesized_expression: ($) => seq("(", $._expression, ")"),
 
-    parenthesized_expression: ($) =>
-      choice(seq("(", $._expression, ")"), seq("[", $._expression, "]")),
-
+    location_counter: () => prec.right(field("location_counter", ".")),
+    local_label: () => field("local_label", /\d+\$/),
     unary_expression: ($) =>
       prec(
-        PREC.unary,
+        unaryPrec,
         seq(
           field("operator", alias(choice("+", "-", "!", "~"), $.operator)),
           field("operand", $._expression),
@@ -915,109 +648,64 @@ module.exports = grammar({
         $.hexadecimal_literal,
         $.binary_literal,
         $.octal_literal,
+        $.float_decimal_literal,
         $.decimal_literal,
       ),
 
-    hexadecimal_literal: () => /\$[0-9A-Fa-z]+/,
-    binary_literal: () => /%[01]+/,
-    octal_literal: () => /@[0-7]+/,
-    decimal_literal: () =>
-      prec.left(choice(/\d+/, seq(optional(/\d+/), ".", /\d+/))),
+    hexadecimal_literal: () => /0[xX][0-9A-Fa-f]+/,
+    binary_literal: () => /0[bB][01]+/,
+    octal_literal: () => /0[0-7]+/,
+    float_decimal_literal: () => token.immediate(seq(/\d+/, ".", /\d+/)),
+    decimal_literal: () => /[0-9]+/,
 
     string_literal: ($) =>
-      choice(
-        // Single quoted
-        seq(
-          "'",
-          repeat(
-            choice(
-              prec(1, /[^'\n\\]+/), // Normal chars
-              "''", // Repeat quote escape
-              $._string_escape_codes,
-            ),
-          ),
-          "'",
-        ),
-        // Double quoted
-        seq(
-          '"',
-          repeat(choice(prec(1, /[^"\n\\]+/), '""', $._string_escape_codes)),
-          '"',
-        ),
+      seq(
+        '"',
+        repeat(choice(prec(1, /[^"\n\\]+/), $.string_escape_code)),
+        '"',
       ),
 
-    _string_escape_codes: ($) =>
+    string_escape_code: ($) =>
       choice(
-        /\\[\\bfnrt"'e]/, // Single char escape codes
-        /\\[0-7]+/, // Octal character code
-        /\\[xX][0-9a-f]+/, // Hex charcter code
+        /\\[\\bfnrt"]/,    // Single char escape codes
+        /\\[xX][0-9a-fA-F]+/, // Hex charcter code
+        /\\[0-7]+/,        // Octal character code
         $.macro_arg,
       ),
 
-    //----------------------------------------------------------------------
-    // Identifiers
-    //----------------------------------------------------------------------
-
-    _identifier: ($) =>
-      choice($.symbol, $.interpolated, $.macro_arg, $._builtin),
-
-    macro_arg: () =>
+    //--------------------------------------------------------------------------
+    // Identifiers                                                           {{{
+    //--------------------------------------------------------------------------
+    _identifier: ($) => prec.right(
       choice(
-        /\\[0-9]/,
-        "\\@",
-        "\\@!",
-        "\\@?",
-        "\\@@",
-        "\\#",
-        /\\\?[0-9]/,
-        "\\.",
-        "\\+",
-        "\\-",
-        /\\\.?[a-zA-Z][a-zA-Z0-9_]*/,
-        /\\\$\.?[a-zA-Z][a-zA-Z0-9_]*/,
-        /\\<[^>]+>/,
+        $.symbol,
+        // $.interpolated,
+        // $.macro_arg,
       ),
+    ),
 
-    interpolated: ($) =>
-      prec.right(
-        1,
-        seq(
-          choice(
-            seq($.macro_arg, $._symbol_chars),
-            seq(optional("."), $._symbol_chars, $.macro_arg),
-            seq(".", $.macro_arg),
-          ),
-          repeat(choice($.macro_arg, $._symbol_chars)),
-          optional("$"),
+    symbol: ($) => prec.right(seq($._symbol_chars, optional("$"))),
+    _symbol_chars: () => /[a-zA-Z0-9_.]+/,
+
+    interpolated: ($) => prec.right(
+      repeat1(
+        choice(
+          $._symbol_chars,
+          seq($.macro_arg, optional($.macro_arg_separator)),
+          $.macro_execution_counter,
         ),
       ),
+    ),
 
-    _builtin: ($) => choice($.reptn, $.carg, $.narg, $.pc),
-    reptn: () => caseInsensitive("reptn"),
-    carg: () => caseInsensitive("carg"),
-    narg: () => caseInsensitive("narg"),
-    pc: () => "*",
-
-    symbol_list: ($) => listSep($.symbol, $._sep),
-    symbol: ($) =>
-      prec.right(
-        seq(repeat1(seq(optional("."), $._symbol_chars)), optional("$")),
-      ),
-    _symbol_chars: () => /[a-zA-Z0-9_%]+/,
-
+    macro_arg: () => /\\[a-zA-Z][a-zA-Z0-9_]+/,
+    macro_arg_separator: () => "\\()",
+    macro_execution_counter: () => "\\@",
+    // }}}
     //----------------------------------------------------------------------
     // Misc:
     //----------------------------------------------------------------------
-
-    _sep: () => /\s*,\s*/,
-    _ws: () => /[ \t]+/,
-    _nl: () => /([ \t]*(\r\n|\n|\r))+/,
   },
 });
-
-function listSep(rule, sep = ",") {
-  return seq(repeat(seq(rule, sep)), rule, optional(sep));
-}
 
 function toCaseInsensitive(a) {
   var ca = a.charCodeAt(0);

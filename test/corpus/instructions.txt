@@ -1,0 +1,56 @@
+================================================================================
+Standalone label
+================================================================================
+    MOV #10,R0
+Loop:
+    SOB R0, Loop
+--------------------------------------------------------------------------------
+(source_file
+  (instruction
+    (instruction_mnemonic)
+    (operand_list
+      (immediate_value (decimal_literal))
+      (register)))
+  (label (symbol))
+    (instruction
+      (instruction_mnemonic)
+      (operand_list
+        (register)
+        (relative_value (symbol)))))
+================================================================================
+Preceeding label
+================================================================================
+    MOV #10,R0
+  Loop: SOB R0, Loop
+--------------------------------------------------------------------------------
+(source_file
+  (instruction
+    (instruction_mnemonic)
+    (operand_list
+      (immediate_value (decimal_literal))
+      (register)))
+  (label (symbol))
+    (instruction
+      (instruction_mnemonic)
+      (operand_list
+        (register)
+        (relative_value (symbol)))))
+================================================================================
+Local label
+================================================================================
+    MOV #10,R0
+  100$:
+    SOB R0, 100$
+--------------------------------------------------------------------------------
+(source_file
+  (instruction
+    (instruction_mnemonic)
+    (operand_list
+      (immediate_value (decimal_literal))
+      (register)))
+  (label (symbol))
+    (instruction
+      (instruction_mnemonic)
+      (operand_list
+        (register)
+        (relative_value (local_label)))))

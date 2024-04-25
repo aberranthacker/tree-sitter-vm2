@@ -1,0 +1,70 @@
+================================================================================
+.rept LinesCount / 2
+================================================================================
+.rept LinesCount / 2
+    MOV (R0)+,(R1)+
+.endr
+--------------------------------------------------------------------------------
+(source_file
+  (repeat
+    (control_mnemonic)
+    count: (binary_expression
+      left: (symbol)
+      operator: (operator)
+      right: (decimal_literal))
+    body: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)
+        operands: (operand_list
+          (address_postinc (register))
+          (address_postinc (register)))))
+  (control_mnemonic)))
+
+================================================================================
+.irp RegN, 0, 1, 2
+:skip
+================================================================================
+.irp RegN, 0, 1, 2
+    MOV R\RegN, -(SP)
+.endr
+--------------------------------------------------------------------------------
+(source_file
+  (repeat
+    (control_mnemonic)
+    (symbol)
+    values: (expressions
+      (octal_literal)
+      (decimal_literal)
+      (decimal_literal))
+    body: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)
+        operands: (operand_list
+          (address_postinc (register))
+          (address_postinc (register)))))
+  (control_mnemonic)))
+
+================================================================================
+.irpc RegN, 012
+:skip
+================================================================================
+.irpc RegN, 012
+    MOV R\RegN, -(SP)
+.endr
+--------------------------------------------------------------------------------
+(source_file
+  (repeat
+    (control_mnemonic)
+    (symbol)
+    values: (expressions
+      (octal_literal)
+      (decimal_literal)
+      (decimal_literal))
+
+    body: (elements
+      (instruction
+        mnemonic: (instruction_mnemonic)
+        operands: (operand_list
+          (address_postinc (register))
+          (address_postinc (register)))))
+  (control_mnemonic)))

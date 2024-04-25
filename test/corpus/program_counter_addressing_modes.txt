@@ -1,0 +1,155 @@
+===
+Mode 2: Immediate          OPR #n
+===
+MOV #10,R0
+ASR #-10,(R5)
+ADD $10,R0
+SUB $-10,R0
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (immediate_value
+        value: (decimal_literal))
+      (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (immediate_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (indirect_address
+        (register))))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (immediate_value
+        value: (decimal_literal))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (immediate_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (register))))
+
+===
+Mode 3: Absolute           OPR @#A
+===
+MOV @#64,R0
+ASR @#-10,(R5)
+ADD @$10,R0
+SUB @$-10,R0
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (absolute_value
+        value: (decimal_literal))
+      (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (absolute_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (indirect_address
+        (register))))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (absolute_value
+        value: (decimal_literal))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (absolute_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (register))))
+
+===
+Mode 6: Relative           OPR A
+===
+MOV 64,R0
+ASR -10,(R5)
+ADD 10,R0
+SUB -10,R0
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (relative_value
+        value: (decimal_literal))
+      (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (relative_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (indirect_address
+        (register))))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (relative_value
+        value: (decimal_literal))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (relative_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (register))))
+
+===
+Mode 7: Relative deferred  OPR @A
+===
+MOV @64,R0
+ASR @-10,(R5)
+ADD @10,R0
+SUB @-10,R0
+---
+(source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_relative_value
+        value: (decimal_literal))
+      (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_relative_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (indirect_address
+        (register))))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_relative_value
+        value: (decimal_literal))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_relative_value
+        value: (unary_expression
+          operator: (operator)
+          operand: (decimal_literal)))
+      (register))))

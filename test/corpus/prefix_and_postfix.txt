@@ -1,0 +1,24 @@
+================================================================================
+Prefixed by multiple labels
+================================================================================
+
+    a:b:c:NOP
+
+--------------------------------------------------------------------------------
+(source_file
+  (label name: (symbol))
+  (label name: (symbol))
+  (label name: (symbol))
+  (instruction
+    mnemonic: (instruction_mnemonic)))
+
+================================================================================
+Prefixed by a label and postfixed by a comment
+================================================================================
+a:  NOP ; No Operation
+--------------------------------------------------------------------------------
+(source_file
+  (label name: (symbol))
+  (instruction
+    mnemonic: (instruction_mnemonic))
+  (comment))
