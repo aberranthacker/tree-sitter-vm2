@@ -16,6 +16,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -177,6 +181,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -238,6 +246,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -321,6 +333,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -385,6 +401,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -436,6 +456,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -545,6 +569,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -606,6 +634,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -772,6 +804,10 @@
           "named": true
         },
         {
+          "type": "char_literal",
+          "named": true
+        },
+        {
           "type": "decimal_literal",
           "named": true
         },
@@ -828,6 +864,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -902,6 +942,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -991,6 +1035,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -1042,6 +1090,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -1182,6 +1234,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -1253,6 +1309,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -1376,6 +1436,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -1603,6 +1667,10 @@
           "named": true
         },
         {
+          "type": "char_literal",
+          "named": true
+        },
+        {
           "type": "decimal_literal",
           "named": true
         },
@@ -1677,6 +1745,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -1744,6 +1816,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -1933,6 +2009,10 @@
             "named": true
           },
           {
+            "type": "char_literal",
+            "named": true
+          },
+          {
             "type": "decimal_literal",
             "named": true
           },
@@ -2004,6 +2084,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -2104,6 +2188,10 @@
           },
           {
             "type": "binary_literal",
+            "named": true
+          },
+          {
+            "type": "char_literal",
             "named": true
           },
           {
@@ -2226,6 +2314,10 @@
   },
   {
     "type": "binary_literal",
+    "named": true
+  },
+  {
+    "type": "char_literal",
     "named": true
   },
   {

@@ -23,6 +23,7 @@
 
 [
   (path)
+  (char_literal)
   (string_literal)
 ] @string
 (string_escape_code) @character.special

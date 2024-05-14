@@ -37,3 +37,14 @@
           right: (hexadecimal_literal))
         operator: (operator)
         right: (binary_literal)))))
+
+================================================================================
+.equiv atChar, '@
+================================================================================
+.equiv atChar, '@
+--------------------------------------------------------------------------------
+(source_file
+  (symbol_definition
+    (directive_mnemonic)
+    (symbol)
+    value: (char_literal)))

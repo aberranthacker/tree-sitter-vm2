@@ -607,6 +607,7 @@ module.exports = grammar({
         $.location_counter,
         $.local_label,
         $._numeric_literal,
+        $.char_literal,
         $.string_literal,
         $.unary_expression,
         $.binary_expression,
@@ -657,6 +658,8 @@ module.exports = grammar({
     octal_literal: () => /0[0-7]+/,
     float_decimal_literal: () => token.immediate(seq(/\d+/, ".", /\d+/)),
     decimal_literal: () => /[0-9]+/,
+
+    char_literal: (_) => /'[\x00-\x7F]/,
 
     string_literal: ($) =>
       seq(
