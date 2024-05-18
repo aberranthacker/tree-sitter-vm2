@@ -58,8 +58,21 @@ Mode 3: Auto-increment deferred OPR @(R)+
 ===
 MOV @(R5)+,R0
 ASR @(R5)+
+MOV *(R5)+,R0
+ASR *(R5)+
 ---
 (source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_postinc
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_postinc
+        (register))))
   (instruction
     mnemonic: (instruction_mnemonic)
     operands: (operand_list
@@ -96,8 +109,21 @@ Mode 5: Auto-decrement deferred OPR @-(R)
 ===
 MOV @-(R5),R0
 ASR @-(R5)
+MOV *-(R5),R0
+ASR *-(R5)
 ---
 (source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_predec
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address_predec
+        (register))))
   (instruction
     mnemonic: (instruction_mnemonic)
     operands: (operand_list
@@ -138,8 +164,25 @@ Mode 7: Index deferred          OPR @X(R)
 ===
 MOV @0b10(R5),R0
 ASR @-0b10(R5)
+MOV *0b10(R5),R0
+ASR *-0b10(R5)
 ---
 (source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_idx_address
+        offset: (binary_literal)
+        (register))
+        (register)))
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_idx_address
+        offset: (unary_expression
+          operator: (operator)
+          operand: (binary_literal))
+        (register))))
   (instruction
     mnemonic: (instruction_mnemonic)
     operands: (operand_list

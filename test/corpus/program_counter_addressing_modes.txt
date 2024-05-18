@@ -42,8 +42,8 @@ Mode 3: Absolute           OPR @#A
 ===
 MOV @#64,R0
 ASR @#-10,(R5)
-ADD @$10,R0
-SUB @$-10,R0
+ADD *$10,R0
+SUB *$-10,R0
 ---
 (source_file
   (instruction
@@ -120,8 +120,8 @@ Mode 7: Relative deferred  OPR @A
 ===
 MOV @64,R0
 ASR @-10,(R5)
-ADD @10,R0
-SUB @-10,R0
+ADD *10,R0
+SUB *-10,R0
 ---
 (source_file
   (instruction

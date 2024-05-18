@@ -565,11 +565,11 @@ module.exports = grammar({
     // Mode 2: Auto-increment          OPR (R)+
     address_postinc: ($) => seq("(", $._register, ")+"),
     // Mode 3: Auto-increment deferred OPR @(R)+
-    indirect_address_postinc: ($) => seq("@", "(", $._register, ")+"),
+    indirect_address_postinc: ($) => seq(choice("@", "*"), "(", $._register, ")+"),
     // Mode 4: Auto-decrement          OPR -(R)
     address_predec: ($) => seq("-(", $._register, ")"),
     // Mode 5: Auto-decrement deferred OPR @-(R)
-    indirect_address_predec: ($) => seq("@", "-", "(", $._register, ")"),
+    indirect_address_predec: ($) => seq(choice("@", "*"), "-", "(", $._register, ")"),
     // Mode 6: Index                   OPR X(R)
     idx_address: ($) =>
       seq(
@@ -581,7 +581,7 @@ module.exports = grammar({
     // Mode 7: Index deferred          OPR @X(R)
     indirect_idx_address: ($) =>
       seq(
-        "@",
+        choice("@", "*"),
         field("offset", $._expression),
         "(",
         $._register,
@@ -592,11 +592,11 @@ module.exports = grammar({
     // Mode 2: Immediate          OPR #n
     immediate_value: ($) => seq(choice("#", "$"), field("value", $._expression)),
     // Mode 3: Absolute           OPR @#A
-    absolute_value: ($) => seq("@", choice("#", "$"), field("value", $._expression)),
+    absolute_value: ($) => seq(choice("@", "*"), choice("#", "$"), field("value", $._expression)),
     // Mode 6: Relative           OPR A
     relative_value: ($) => field("value", $._expression),
     // Mode 7: Relative deferred  OPR @A
-    indirect_relative_value: ($) => seq("@", field("value", $._expression)),
+    indirect_relative_value: ($) => seq(choice("@", "*"), field("value", $._expression)),
 
     //-------------------------------------------------------------------------
     // Expressions:
