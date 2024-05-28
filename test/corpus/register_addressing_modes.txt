@@ -19,9 +19,16 @@ ASL R0
 Mode 1: Register deferred       OPR (R)
 ===
 MOV (R5),R0
+MOV @R5,R1
 ASR (R5)
 ---
 (source_file
+  (instruction
+    mnemonic: (instruction_mnemonic)
+    operands: (operand_list
+      (indirect_address
+        (register))
+        (register)))
   (instruction
     mnemonic: (instruction_mnemonic)
     operands: (operand_list

@@ -123,6 +123,7 @@ const directives = [ // {{{
   ".error",
   ".print",   // .print string
   ".warning",
+  ".org",
   ".global",  // .global symbol, .globl symbol
 ]; // }}}
 const directiveNoOperands = [ // {{{
@@ -561,7 +562,7 @@ module.exports = grammar({
     // Mode 0: Register                OPR R
     _register: ($) => choice($.named_register, $.register),
     // Mode 1: Register deferred       OPR (R)
-    indirect_address: ($) => seq("(", $._register, ")"),
+    indirect_address: ($) => choice(seq("(", $._register, ")"), seq("@", $._register)),
     // Mode 2: Auto-increment          OPR (R)+
     address_postinc: ($) => seq("(", $._register, ")+"),
     // Mode 3: Auto-increment deferred OPR @(R)+

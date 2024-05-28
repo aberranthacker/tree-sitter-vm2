@@ -815,6 +815,10 @@
           },
           {
             "type": "PATTERN",
+            "value": ".[oO][rR][gG]"
+          },
+          {
+            "type": "PATTERN",
             "value": ".[gG][lL][oO][bB][aA][lL]"
           }
         ]
@@ -2223,19 +2227,37 @@
       ]
     },
     "indirect_address": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "STRING",
-          "value": "("
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "("
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_register"
+            },
+            {
+              "type": "STRING",
+              "value": ")"
+            }
+          ]
         },
         {
-          "type": "SYMBOL",
-          "name": "_register"
-        },
-        {
-          "type": "STRING",
-          "value": ")"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "@"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_register"
+            }
+          ]
         }
       ]
     },
