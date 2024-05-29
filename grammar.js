@@ -669,12 +669,11 @@ module.exports = grammar({
         '"',
       ),
 
-    string_escape_code: ($) =>
+    string_escape_code: (_) =>
       choice(
-        /\\[\\bfnrt"]/,    // Single char escape codes
-        /\\[xX][0-9a-fA-F]+/, // Hex charcter code
-        /\\[0-7]+/,        // Octal character code
-        $.macro_arg,
+        /\\[\\bfnrt"]/,           // Single char escape codes
+        /\\[xX][0-9a-fA-F]{1,2}/, // Hex charcter code
+        /\\[0-7]+/,               // Octal character code
       ),
 
     //--------------------------------------------------------------------------
@@ -683,8 +682,8 @@ module.exports = grammar({
     _identifier: ($) => prec.right(
       choice(
         $.symbol,
-        // $.interpolated,
-        // $.macro_arg,
+        //$.interpolated,
+        $.macro_arg,
       ),
     ),
 

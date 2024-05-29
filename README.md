@@ -10,7 +10,23 @@ instructions set as the PDP-11 with EIS and FIS extensions.
 ### NeoVim
 [Adding parsers](https://github.com/nvim-treesitter/nvim-treesitter?tab=readme-ov-file#adding-parsers)
 
-## TODO
-    - fix support for `.dc.[size]`/`.ds.[size]` directives
-    - add support for macro interpolations
+Add to you tree-sitter config:
+```lua
+      local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+      parser_config.vm2 = {
+        install_info = {
+          url = 'git@github.com:aberranthacker/tree-sitter-vm2.git', -- local path or git repo
+          files = { 'src/parser.c' },
+          -- optional entries:
+          generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+          requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+        },
+        -- filetype = 'gas', -- if filetype does not match the parser name
+      }
+```
 
+## TODO
+- fix support for `.dc.[size]`/`.ds.[size]` directives
+- implement parsing of `.irp` and `.irpc` directives
+- implement parsing of `.ifc` and `.ifnc`, they take unquoted strings as arguments
+- implement parsing of macro interpolations
